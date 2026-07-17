@@ -88,8 +88,7 @@ h1 {
 
 .panel,
 .toolbar,
-.result-panel,
-.grade-section {
+.result-panel {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 20px;
@@ -111,6 +110,22 @@ h1 {
   margin-bottom: 18px;
 }
 
+.intro-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.score-rule {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1px dashed var(--line);
+  font-size: 0.94rem;
+}
 
 .toolbar {
   position: sticky;
@@ -399,6 +414,7 @@ button:active {
 }
 
 @media (max-width: 820px) {
+  .intro-grid,
   .option-list,
   .blank-selectors {
     grid-template-columns: 1fr;
@@ -421,4 +437,30 @@ button:active {
   .tf-btn {
     flex: 1 1 120px;
   }
+}
+
+
+.pdf-download-menu {
+  margin: 0 0 18px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(15, 76, 129, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 8px 24px rgba(15, 76, 129, 0.08);
+  text-align: center;
+}
+
+.pdf-download-button {
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 999px;
+  background: #0f4c81;
+  color: #ffffff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.pdf-download-button:hover,
+.pdf-download-button:focus {
+  opacity: 0.9;
 }

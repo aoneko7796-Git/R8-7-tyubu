@@ -1,5 +1,5 @@
 const TOTAL_QUESTIONS = 40;
-const STORAGE_KEY = "chubu_hourei_quiz_20260701_answers_v2";
+const STORAGE_KEY = "chubu_hourei_quiz_20260701_answers";
 
 const trueFalseQuestions = [
   {
@@ -334,23 +334,19 @@ function renderFillQuestion() {
 
     const select = document.createElement("select");
     select.id = `blank-${blank.id}`;
-    select.setAttribute("autocomplete", "off");
+    select.value = selected;
 
     const empty = document.createElement("option");
     empty.value = "";
     empty.textContent = "選択してください";
-    empty.selected = !selected;
     select.appendChild(empty);
 
     options.forEach((option) => {
       const optionElement = document.createElement("option");
       optionElement.value = option.kana;
       optionElement.textContent = `${option.kana}. ${option.text}`;
-      optionElement.selected = selected === option.kana;
       select.appendChild(optionElement);
     });
-
-    select.value = selected;
 
     select.addEventListener("change", () => {
       state.q2[blank.id] = select.value;
@@ -444,85 +440,24 @@ function showAnswers() {
   `;
 }
 
-function hideResultPanel() {
-  const resultPanel = document.getElementById("resultPanel");
-  resultPanel.className = "result-panel hidden";
-  resultPanel.innerHTML = "";
-}
-
-function clearReviewMarks() {
-  document.querySelectorAll(".review-text, .blank-review").forEach((element) => element.remove());
-  document.querySelectorAll(".correct, .incorrect").forEach((element) => {
-    element.classList.remove("correct", "incorrect");
-  });
-}
-
-function clearAnswerControls() {
-  // 〇×ボタンの選択状態を完全に外す。
-  document.querySelectorAll(".tf-btn").forEach((button) => {
-    button.classList.remove("selected");
-    button.setAttribute("aria-pressed", "false");
-  });
-
-  // 語群プルダウンを必ず先頭の「選択してください」に戻す。
-  document.querySelectorAll("select").forEach((select) => {
-    Array.from(select.options).forEach((option, index) => {
-      option.selected = index === 0;
-      option.defaultSelected = index === 0;
-    });
-    select.value = "";
-    select.selectedIndex = 0;
-  });
-}
-
-function clearSavedAnswers() {
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-    Object.keys(localStorage)
-      .filter((key) => key.startsWith("chubu_hourei_quiz"))
-      .forEach((key) => localStorage.removeItem(key));
-    sessionStorage.removeItem(STORAGE_KEY);
-  } catch (error) {
-    console.warn("保存済み回答の削除に失敗しました。", error);
-  }
-}
-
 function resetAnswers() {
-  // 「やり直す」は、回答・採点結果・正答表示・画面上の選択色をすべて初期化する。
+  const proceed = window.confirm("回答をすべて消去して、最初からやり直しますか？");
+  if (!proceed) return;
   state = { q1: {}, q2: {} };
   isGraded = false;
   showingAnswers = false;
-
-  clearSavedAnswers();
-  hideResultPanel();
-  clearReviewMarks();
-  clearAnswerControls();
-
-  // 再描画して、内部状態と画面表示を完全に一致させる。
+  localStorage.removeItem(STORAGE_KEY);
   renderAll();
-  clearReviewMarks();
-  clearAnswerControls();
-  updateProgress();
-  hideResultPanel();
-
-  // 一部スマホブラウザのフォーム復元対策として、描画後にも再度クリアする。
-  window.setTimeout(() => {
-    state = { q1: {}, q2: {} };
-    clearSavedAnswers();
-    clearReviewMarks();
-    clearAnswerControls();
-    updateProgress();
-    hideResultPanel();
-  }, 0);
+  document.getElementById("resultPanel").className = "result-panel hidden";
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
-
 
 function renderAll() {
   renderTrueFalseQuestions();
   renderFillQuestion();
   updateProgress();
   if (!isGraded && !showingAnswers) {
-    hideResultPanel();
+    document.getElementById("resultPanel").className = "result-panel hidden";
   }
 }
 
